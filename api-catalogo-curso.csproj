@@ -19,10 +19,6 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
-      <Folder Include="modules\categoria\repository\" />
-      <Folder Include="modules\categoria\service\" />
-      <Folder Include="modules\produto\repository\" />
-      <Folder Include="modules\produto\service\" />
     </ItemGroup>
 
 </Project>
