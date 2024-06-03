@@ -4,6 +4,8 @@ using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.common.repository.interfaces;
+using api_catalogo_curso.modules.produto.repository;
+using api_catalogo_curso.modules.produto.repository.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //TODO SE DER ERRO DE CYCLONISAÇÃO
-// builder.Services.AddControllers()
-//     .AddJsonOptions(option => option.JsonSerializerOptions
-//         .ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers()
+    .AddJsonOptions(option => option.JsonSerializerOptions
+        .ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,6 +29,7 @@ builder.Services.AddDbContext<AppDbConnectionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Connection")));
 
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();

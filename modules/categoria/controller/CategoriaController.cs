@@ -7,7 +7,7 @@ namespace api_catalogo_curso.modules.categoria.controller;
 [Route("[controller]")]
 public class CategoriaController : ControllerBase
 {
-    private ICategoriaRepository _repository;
+    private readonly ICategoriaRepository _repository;
 
     public CategoriaController(ICategoriaRepository repository)
     {
@@ -15,8 +15,14 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult ListarCategoria(int skip = 0, int take = 10 )
+    public IActionResult ListarCategorias(int skip = 0, int take = 10 )
     {
         return Ok(_repository.GetAll(skip, take));
+    }
+    
+    [HttpGet("Produtos")]
+    public IActionResult ListarCategoriaComProdutos(int skip = 0, int take = 10 )
+    {
+        return Ok(_repository.GetAllInclude(skip, take));
     }
 }

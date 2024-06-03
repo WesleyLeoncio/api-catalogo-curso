@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using api_catalogo_curso.modules.categoria.models.entity;
 
 namespace api_catalogo_curso.modules.produto.models.entity;
@@ -36,5 +37,5 @@ public class Produto
     
     [Column(name:"categoria_id")] 
     public int CategoriaId { get; set; }
-    public Categoria Categoria { get; set; }
+    public Categoria? Categoria { get; set; }
 }
