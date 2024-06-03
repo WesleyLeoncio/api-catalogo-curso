@@ -11,7 +11,7 @@ using api_catalogo_curso.infra.data;
 
 namespace api_catalogo_curso.Migrations
 {
-    [DbContext(typeof(ConnectionContext))]
+    [DbContext(typeof(AppDbConnectionContext))]
     [Migration("20240524195833_create_tables")]
     partial class create_tables
     {

@@ -1,6 +1,11 @@
-﻿namespace api_catalogo_curso.modules.categoria.repository;
+﻿using api_catalogo_curso.infra.data;
+using api_catalogo_curso.modules.categoria.models.entity;
+using api_catalogo_curso.modules.categoria.repository.interfaces;
+using api_catalogo_curso.modules.common.repository;
 
-public class CategoriaRepository
+namespace api_catalogo_curso.modules.categoria.repository;
+
+public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
 {
-    
+    public CategoriaRepository(AppDbConnectionContext context) : base(context) { }
 }

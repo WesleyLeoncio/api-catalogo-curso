@@ -1,5 +1,9 @@
 using System.Text.Json.Serialization;
 using api_catalogo_curso.infra.data;
+using api_catalogo_curso.modules.categoria.repository;
+using api_catalogo_curso.modules.categoria.repository.interfaces;
+using api_catalogo_curso.modules.common.repository;
+using api_catalogo_curso.modules.common.repository.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +23,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddDbContext<ConnectionContext>(options =>
+builder.Services.AddDbContext<AppDbConnectionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Connection")));
+
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
 

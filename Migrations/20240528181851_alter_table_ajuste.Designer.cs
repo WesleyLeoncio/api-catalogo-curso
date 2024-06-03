@@ -11,7 +11,7 @@ using api_catalogo_curso.infra.data;
 
 namespace api_catalogo_curso.Migrations
 {
-    [DbContext(typeof(ConnectionContext))]
+    [DbContext(typeof(AppDbConnectionContext))]
     [Migration("20240528181851_alter_table_ajuste")]
     partial class alter_table_ajuste
     {

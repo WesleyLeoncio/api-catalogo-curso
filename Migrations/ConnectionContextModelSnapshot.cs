@@ -10,7 +10,7 @@ using api_catalogo_curso.infra.data;
 
 namespace api_catalogo_curso.Migrations
 {
-    [DbContext(typeof(ConnectionContext))]
+    [DbContext(typeof(AppDbConnectionContext))]
     partial class ConnectionContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

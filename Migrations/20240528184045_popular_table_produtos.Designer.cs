@@ -11,7 +11,7 @@ using api_catalogo_curso.infra.data;
 
 namespace api_catalogo_curso.Migrations
 {
-    [DbContext(typeof(ConnectionContext))]
+    [DbContext(typeof(AppDbConnectionContext))]
     [Migration("20240528184045_popular_table_produtos")]
     partial class popular_table_produtos
     {

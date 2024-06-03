@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api_catalogo_curso.infra.data;
 
-public class ConnectionContext(DbContextOptions options) : DbContext(options)
+public class AppDbConnectionContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<Categoria>? CategoriaBd { get; set; }
     
