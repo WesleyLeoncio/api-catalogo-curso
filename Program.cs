@@ -1,5 +1,8 @@
 using System.Text.Json.Serialization;
 using api_catalogo_curso.infra.data;
+using api_catalogo_curso.infra.exceptions.handle;
+using api_catalogo_curso.infra.exceptions.interfaces;
+using api_catalogo_curso.infra.middlewares;
 using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
 using api_catalogo_curso.modules.common.repository;
@@ -14,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-//TODO SE DER ERRO DE CYCLONISAÇÃO
+//TODO CYCLONISAÇÃO
 builder.Services.AddControllers()
     .AddJsonOptions(option => option.JsonSerializerOptions
         .ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -28,9 +31,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbConnectionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Connection")));
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+// Handle Exceptions
+builder.Services.AddTransient<IErrorResultTask, HandleNotFound>();
 
 var app = builder.Build();
 
@@ -40,6 +46,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware(typeof(GlobalErrorHandlingMiddleware));
 
 app.UseHttpsRedirection();
 

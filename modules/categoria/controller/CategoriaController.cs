@@ -1,4 +1,5 @@
-﻿using api_catalogo_curso.modules.categoria.repository.interfaces;
+﻿using api_catalogo_curso.infra.exceptions.custom;
+using api_catalogo_curso.modules.categoria.repository.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.categoria.controller;
@@ -17,6 +18,7 @@ public class CategoriaController : ControllerBase
     [HttpGet]
     public IActionResult ListarCategorias(int skip = 0, int take = 10 )
     {
+        throw new Exception("teste");
         return Ok(_repository.GetAll(skip, take));
     }
     
