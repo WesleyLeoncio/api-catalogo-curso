@@ -23,19 +23,19 @@ public class GlobalErrorHandlingMiddleware
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            await HandleExceptionAsync(context, ex)!;
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private Task? HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
 
         ErrorExceptionResult error = new ErrorExceptionResult(context, exception);
         foreach (var errorResultTask in _validarException)
         {
-            Task? erroResult = errorResultTask.ValidarException(error);
-            if (erroResult != null) return erroResult;
+            Task erroResult = errorResultTask.ValidarException(error);
+            if (erroResult != Task.FromResult(false)) return erroResult;
         }
       
         return error.GetResultPadrao(exception);

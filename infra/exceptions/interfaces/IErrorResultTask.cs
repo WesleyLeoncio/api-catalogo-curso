@@ -2,5 +2,5 @@
 
 public interface IErrorResultTask
 {
-    public Task? ValidarException(ErrorExceptionResult error);
+    public Task ValidarException(ErrorExceptionResult error);
 }

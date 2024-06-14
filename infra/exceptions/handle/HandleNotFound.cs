@@ -6,7 +6,7 @@ namespace api_catalogo_curso.infra.exceptions.handle;
 
 public class HandleNotFound : IErrorResultTask
 {
-    public Task? ValidarException(ErrorExceptionResult error)
+    public Task ValidarException(ErrorExceptionResult error)
     {
         if (error.ExceptionType == typeof(NotFoundException))
         {
@@ -16,6 +16,6 @@ public class HandleNotFound : IErrorResultTask
             return error.Context.Response.WriteAsync(result);
         }
         
-        return null;
+        return Task.FromResult(false);
     }
 }

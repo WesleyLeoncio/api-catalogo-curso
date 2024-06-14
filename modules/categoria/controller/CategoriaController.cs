@@ -18,13 +18,14 @@ public class CategoriaController : ControllerBase
     [HttpGet]
     public IActionResult ListarCategorias(int skip = 0, int take = 10 )
     {
-        throw new Exception("teste");
+        throw new NotFoundException("NotFoundException");
         return Ok(_repository.GetAll(skip, take));
     }
     
     [HttpGet("Produtos")]
     public IActionResult ListarCategoriaComProdutos(int skip = 0, int take = 10 )
     {
+        throw new Exception("Exception");
         return Ok(_repository.GetAllInclude(skip, take));
     }
 }

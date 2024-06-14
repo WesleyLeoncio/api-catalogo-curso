@@ -16,7 +16,7 @@ public class ErrorExceptionResult
         ExceptionType = exception.GetType();
     }
     
-    public Task GetResultPadrao(Exception exception)
+    public Task? GetResultPadrao(Exception exception)
     {
         string msg = exception.Message;
         int status = 500;
