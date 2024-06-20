@@ -7,42 +7,45 @@ namespace api_catalogo_curso.modules.common.repository;
 
 public class Repository<T>: IRepository<T> where T : class
 {
-
-    protected readonly AppDbConnectionContext Context;
+    private readonly AppDbConnectionContext _context;
 
     public Repository(AppDbConnectionContext context)
     {
-        Context = context;
+        _context = context;
     }
-
+    
+    public IQueryable<T> GetIQueryable()
+    {
+        return _context.Set<T>().AsNoTracking();
+    }
 
     public IEnumerable<T> GetAll(int skip = 0, int take = 10)
     {
-        return Context.Set<T>().AsNoTracking().Skip(skip).Take(take).ToList();
+        return GetIQueryable().Skip(skip).Take(take).ToList();
     }
-
+    
     public T? Get(Expression<Func<T, bool>> predicate)
     {
-        return Context.Set<T>().AsNoTracking().FirstOrDefault(predicate);
+        return GetIQueryable().FirstOrDefault(predicate);
     }
 
     public T Create(T entity)
     {
-        Context.Set<T>().Add(entity);
-        Context.SaveChanges();
+        _context.Set<T>().Add(entity);
+        _context.SaveChanges();
         return entity;
     }
 
     public T Update(T entity)
     {
-        Context.SaveChanges();
+        _context.SaveChanges();
         return entity;
     }
 
     public T Delete(T entity)
     {
-        Context.Set<T>().Remove(entity);
-        Context.SaveChanges();
+        _context.Set<T>().Remove(entity);
+        _context.SaveChanges();
         return entity;
     }
 }

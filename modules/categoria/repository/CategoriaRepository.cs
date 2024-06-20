@@ -8,16 +8,13 @@ namespace api_catalogo_curso.modules.categoria.repository;
 
 public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
 {
-    private readonly AppDbConnectionContext _context;
-    public CategoriaRepository(AppDbConnectionContext context) : base(context)
-    {
-        _context = context;
-    }
+    public CategoriaRepository(AppDbConnectionContext context) : base(context) { }
     
     public IEnumerable<Categoria> GetAllInclude(int skip = 0, int take = 10)
     {
-        return _context.CategoriaBd!.AsNoTracking()
+        return GetIQueryable()
             .Include(categoria => categoria.Produtos)
-            .Skip(skip).Take(take);
+            .Skip(skip).Take(take).ToList();
     }
+    
 }
