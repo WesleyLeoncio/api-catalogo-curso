@@ -1,4 +1,4 @@
-﻿using api_catalogo_curso.modules.produto.repository.interfaces;
+﻿using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.produto.controller;
@@ -7,16 +7,16 @@ namespace api_catalogo_curso.modules.produto.controller;
 [Route("[controller]")]
 public class ProdutoController : ControllerBase
 {
-    private readonly IProdutoRepository _repository;
+    private readonly IUnitOfWork _uof;
 
-    public ProdutoController(IProdutoRepository repository)
+    public ProdutoController(IUnitOfWork uof)
     {
-        _repository = repository;
+        _uof = uof;
     }
 
     [HttpGet]
     public IActionResult ListarProdutos(int skip = 0, int take = 10 )
     {
-        return Ok(_repository.GetAll(skip, take));
+        return Ok(_uof.ProdutoRepository.GetAll(skip, take));
     }
 }

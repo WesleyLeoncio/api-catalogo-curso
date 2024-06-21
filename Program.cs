@@ -7,6 +7,8 @@ using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.common.repository.interfaces;
+using api_catalogo_curso.modules.common.unit_of_work;
+using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.repository;
 using api_catalogo_curso.modules.produto.repository.interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,7 @@ builder.Services.AddDbContext<AppDbConnectionContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Handle Exceptions
 builder.Services.AddTransient<IErrorResultTask, HandleNotFound>();
