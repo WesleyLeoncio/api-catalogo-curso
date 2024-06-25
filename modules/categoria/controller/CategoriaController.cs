@@ -1,5 +1,6 @@
-﻿using api_catalogo_curso.modules.categoria.models.entity;
-using api_catalogo_curso.modules.common.unit_of_work.interfaces;
+﻿using api_catalogo_curso.modules.categoria.models.request;
+using api_catalogo_curso.modules.categoria.models.response;
+using api_catalogo_curso.modules.categoria.service.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.categoria.controller;
@@ -8,38 +9,49 @@ namespace api_catalogo_curso.modules.categoria.controller;
 [Route("[controller]")]
 public class CategoriaController : ControllerBase
 {
-    private readonly IUnitOfWork _uof;
-
-    public CategoriaController(IUnitOfWork uof)
+    private readonly ICategoriaService _service;
+    public CategoriaController(ICategoriaService service)
     {
-        _uof = uof;
+        _service = service;
     }
-    
+
     [HttpPost]
-    public IActionResult CadastroDeCategoria(Categoria categoria)
+    public ActionResult<CategoriaResponse> CadastroDeCategoria(CategoriaRequest request)
     {
-        Categoria newCategoria = _uof.CategoriaRepository.Create(categoria);
-        _uof.Commit();
-        return CreatedAtAction(nameof(BuscarCategoria),
-            new { id = newCategoria.Id }, newCategoria);
+        CategoriaResponse response = _service.Create(request);
+        
+        return CreatedAtAction(nameof(BuscarCategoria),new { id = response.Id }, response);
     }
     
     [HttpGet("{id}")]
-    public IActionResult BuscarCategoria(int id)
+    public ActionResult<CategoriaResponse> BuscarCategoria(int id)
     {
-        Categoria? categoria = _uof.CategoriaRepository.Get(c => c.Id == id);
-        return Ok(categoria);
-    }
-
-    [HttpGet]
-    public IActionResult ListarCategorias(int skip = 0, int take = 10 )
-    {
-        return Ok(_uof.CategoriaRepository.GetAll(skip, take));
+        return Ok(_service.GetId(id));
     }
     
-    [HttpGet("Produtos")]
-    public IActionResult ListarCategoriaComProdutos(int skip = 0, int take = 10 )
+    [HttpGet]
+    public ActionResult<CategoriaResponse> ListarCategorias(int skip = 0, int take = 10)
     {
-        return Ok(_uof.CategoriaRepository.GetAllInclude(skip, take));
+        return Ok(_service.GetAll(skip, take));
     }
+
+    [HttpGet("Produtos")]
+    public ActionResult<CategoriaProdutoResponse> ListarCategoriaComProdutos(int skip = 0, int take = 10)
+    {
+        return Ok(_service.GetAllInclude(skip, take));
+    }
+    
+    [HttpPut("{id}")]
+    public ActionResult<CategoriaResponse> AlterarCategoria(int id,  CategoriaRequest request)
+    {
+        return _service.Update(id, request);
+    }
+    
+    [HttpDelete("{id}")]
+    public ActionResult<CategoriaResponse> DeletarCategoria(int id)
+    { 
+        return _service.Delete(id);
+    }
+    
+    
 }

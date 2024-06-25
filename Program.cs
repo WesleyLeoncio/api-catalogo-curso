@@ -5,6 +5,8 @@ using api_catalogo_curso.infra.exceptions.interfaces;
 using api_catalogo_curso.infra.middlewares;
 using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
+using api_catalogo_curso.modules.categoria.service;
+using api_catalogo_curso.modules.categoria.service.interfaces;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.common.repository.interfaces;
 using api_catalogo_curso.modules.common.unit_of_work;
@@ -19,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-//TODO CYCLONISAÇÃO
+// CYCLONISAÇÃO
 builder.Services.AddControllers()
     .AddJsonOptions(option => option.JsonSerializerOptions
         .ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -29,14 +31,20 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Config AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
+// Config conection SGBD
 builder.Services.AddDbContext<AppDbConnectionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Connection")));
 
+// Injections, repositories and services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+
 
 // Handle Exceptions
 builder.Services.AddTransient<IErrorResultTask, HandleNotFound>();
