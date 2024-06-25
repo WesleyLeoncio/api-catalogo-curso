@@ -3,6 +3,10 @@
 namespace api_catalogo_curso.modules.categoria.models.request;
 
 public record CategoriaRequest(
-    [Required] [StringLength(80)] string Nome,
-    [Required] [StringLength(300)] string ImagemUrl
+    [Required(ErrorMessage = "Campo Nome Obrigatorio!")] 
+    [StringLength(80, ErrorMessage = "O campo Nome deve ter no máximo 80 caracteres!")]
+    string Nome,
+    [Required(ErrorMessage = "Campo ImagemUrl Obrigatorio!")] 
+    [StringLength(300, ErrorMessage = "O campo ImagemUrl deve ter no máximo 300 caracteres!")]
+    string ImagemUrl
 );
