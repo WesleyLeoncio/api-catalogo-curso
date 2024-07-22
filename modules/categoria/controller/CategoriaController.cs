@@ -37,7 +37,7 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpGet("Produtos")]
-    public ActionResult<CategoriaProdutoResponse> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
+    public ActionResult<Pageable<CategoriaProdutoResponse>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
     {
         return Ok(_service.GetAllInclude(queryParameters));
     }

@@ -9,7 +9,7 @@ using AutoMapper;
 
 namespace api_catalogo_curso.modules.categoria.service;
 
-public class CategoriaService: ICategoriaService
+public class CategoriaService : ICategoriaService
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _uof;
@@ -57,20 +57,27 @@ public class CategoriaService: ICategoriaService
             _uof.CategoriaRepository.GetAll(skip, take));
     }
 
-    public IEnumerable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters)
+    public Pageable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters)
     {
-        var categorias = 
+        var c =
             _uof.CategoriaRepository.GetAllInclude(queryParameters);
-        
-        Console.WriteLine(categorias.TotalPages);
-        
-        return _mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias);
+
+        var dto = new Pageable<CategoriaProdutoResponse>(
+            c.CurrentPage,
+            c.TotalPages,
+            c.PageSize,
+            c.TotalCount,
+            _mapper.Map<List<CategoriaProdutoResponse>>(c.Content),
+            c.HasPrevious,
+            c.HasNext
+        );
+
+        return dto;
     }
 
     private Categoria CheckCategory(int id)
     {
         return _uof.CategoriaRepository.Get(c => c.Id == id) ??
-                 throw new NotFoundException("Categoria não encontrada!");
+               throw new NotFoundException("Categoria não encontrada!");
     }
-    
 }

@@ -12,7 +12,7 @@ public interface ICategoriaService
    CategoriaResponse Delete(int id);
    CategoriaResponse GetId(int id);
    IEnumerable<CategoriaResponse> GetAll(int skip = 0, int take = 10);
-   IEnumerable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters);
+   Pageable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters);
 
 
 }
