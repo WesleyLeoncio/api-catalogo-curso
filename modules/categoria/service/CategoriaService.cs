@@ -3,6 +3,7 @@ using api_catalogo_curso.modules.categoria.models.entity;
 using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
 using api_catalogo_curso.modules.categoria.service.interfaces;
+using api_catalogo_curso.modules.common.models;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using AutoMapper;
 
@@ -56,10 +57,14 @@ public class CategoriaService: ICategoriaService
             _uof.CategoriaRepository.GetAll(skip, take));
     }
 
-    public IEnumerable<CategoriaProdutoResponse> GetAllInclude(int skip = 0, int take = 10)
+    public IEnumerable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters)
     {
-        return _mapper.Map<IEnumerable<CategoriaProdutoResponse>>(
-            _uof.CategoriaRepository.GetAllInclude(skip, take));
+        var categorias = 
+            _uof.CategoriaRepository.GetAllInclude(queryParameters);
+        
+        Console.WriteLine(categorias.TotalPages);
+        
+        return _mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias);
     }
 
     private Categoria CheckCategory(int id)

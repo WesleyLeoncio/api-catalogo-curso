@@ -1,6 +1,7 @@
 ﻿using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
 using api_catalogo_curso.modules.categoria.service.interfaces;
+using api_catalogo_curso.modules.common.models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.categoria.controller;
@@ -36,9 +37,9 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpGet("Produtos")]
-    public ActionResult<CategoriaProdutoResponse> ListarCategoriaComProdutos(int skip = 0, int take = 10)
+    public ActionResult<CategoriaProdutoResponse> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
     {
-        return Ok(_service.GetAllInclude(skip, take));
+        return Ok(_service.GetAllInclude(queryParameters));
     }
     
     [HttpPut("{id}")]
