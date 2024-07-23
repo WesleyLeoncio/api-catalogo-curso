@@ -19,9 +19,9 @@ public class Repository<T>: IRepository<T> where T : class
         return _context.Set<T>().AsNoTracking();
     }
 
-    public IEnumerable<T> GetAll(int skip = 0, int take = 10)
+    public IEnumerable<T> GetAll()
     {
-        return GetIQueryable().Skip(skip).Take(take).ToList();
+        return GetIQueryable().ToList();
     }
     
     public T? Get(Expression<Func<T, bool>> predicate)

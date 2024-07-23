@@ -1,6 +1,6 @@
-﻿namespace api_catalogo_curso.modules.common.models;
+﻿namespace api_catalogo_curso.modules.common.pagination.models.response;
 
-public class Pageable<T>
+public class PageableResponse<T>
 {
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
@@ -10,7 +10,7 @@ public class Pageable<T>
     public bool HasPrevious { get; set; }
     public bool HasNext { get; set; }
 
-    public Pageable(int currentPage, int totalPages, int pageSize, int totalCount, List<T> content, bool hasPrevious, bool hasNext)
+    public PageableResponse(int currentPage, int totalPages, int pageSize, int totalCount, List<T> content, bool hasPrevious, bool hasNext)
     {
         CurrentPage = currentPage;
         TotalPages = totalPages;

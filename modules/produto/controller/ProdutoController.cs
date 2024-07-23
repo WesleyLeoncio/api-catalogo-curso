@@ -15,8 +15,8 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult ListarProdutos(int skip = 0, int take = 10 )
+    public IActionResult ListarProdutos()
     {
-        return Ok(_uof.ProdutoRepository.GetAll(skip, take));
+        return Ok(_uof.ProdutoRepository.GetAll());
     }
 }

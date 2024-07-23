@@ -3,7 +3,9 @@ using api_catalogo_curso.modules.categoria.models.entity;
 using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
 using api_catalogo_curso.modules.categoria.service.interfaces;
-using api_catalogo_curso.modules.common.models;
+using api_catalogo_curso.modules.common.pagination;
+using api_catalogo_curso.modules.common.pagination.models.request;
+using api_catalogo_curso.modules.common.pagination.models.response;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using AutoMapper;
 
@@ -51,28 +53,26 @@ public class CategoriaService : ICategoriaService
         return (_mapper.Map<CategoriaResponse>(categoria));
     }
 
-    public IEnumerable<CategoriaResponse> GetAll(int skip = 0, int take = 10)
+    public IEnumerable<CategoriaResponse> GetAll()
     {
         return _mapper.Map<IEnumerable<CategoriaResponse>>(
-            _uof.CategoriaRepository.GetAll(skip, take));
+            _uof.CategoriaRepository.GetAll());
     }
 
-    public Pageable<CategoriaProdutoResponse> GetAllInclude(QueryParameters queryParameters)
+    public PageableResponse<CategoriaProdutoResponse> GetAllIncludePageable(QueryParameters queryParameters)
     {
-        var c =
-            _uof.CategoriaRepository.GetAllInclude(queryParameters);
+        Pageable<Categoria> categoriaPageable = 
+            _uof.CategoriaRepository.GetAllIncludePageable(queryParameters);
+        
+        return _mapper.Map<PageableResponse<CategoriaProdutoResponse>>(categoriaPageable);
+    }
 
-        var dto = new Pageable<CategoriaProdutoResponse>(
-            c.CurrentPage,
-            c.TotalPages,
-            c.PageSize,
-            c.TotalCount,
-            _mapper.Map<List<CategoriaProdutoResponse>>(c.Content),
-            c.HasPrevious,
-            c.HasNext
-        );
-
-        return dto;
+    public PageableResponse<CategoriaResponse> GetAllFilterPageable(CategoriaFiltroRequest filtroRequest)
+    {
+        Pageable<Categoria> categoriaPageable = 
+            _uof.CategoriaRepository.GetAllFilterPageable(filtroRequest);
+        
+        return _mapper.Map<PageableResponse<CategoriaResponse>>(categoriaPageable);
     }
 
     private Categoria CheckCategory(int id)

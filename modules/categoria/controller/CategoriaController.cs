@@ -1,7 +1,8 @@
 ﻿using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
 using api_catalogo_curso.modules.categoria.service.interfaces;
-using api_catalogo_curso.modules.common.models;
+using api_catalogo_curso.modules.common.pagination.models.request;
+using api_catalogo_curso.modules.common.pagination.models.response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.categoria.controller;
@@ -31,15 +32,21 @@ public class CategoriaController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<CategoriaResponse> ListarCategorias(int skip = 0, int take = 10)
+    public ActionResult<CategoriaResponse> ListarCategorias()
     {
-        return Ok(_service.GetAll(skip, take));
+        return Ok(_service.GetAll());
     }
 
-    [HttpGet("Produtos")]
-    public ActionResult<Pageable<CategoriaProdutoResponse>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
+    [HttpGet("Produtos/Pagination")]
+    public ActionResult<PageableResponse<CategoriaProdutoResponse>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
     {
-        return Ok(_service.GetAllInclude(queryParameters));
+        return Ok(_service.GetAllIncludePageable(queryParameters));
+    }
+    
+    [HttpGet("Filter/Pagination")]
+    public ActionResult<PageableResponse<CategoriaResponse>> ListarCategoriaComFiltro([FromQuery] CategoriaFiltroRequest filtroRequest)
+    {
+        return Ok(_service.GetAllFilterPageable(filtroRequest));
     }
     
     [HttpPut("{id}")]

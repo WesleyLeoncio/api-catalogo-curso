@@ -1,4 +1,4 @@
-﻿namespace api_catalogo_curso.modules.common.models;
+﻿namespace api_catalogo_curso.modules.common.pagination.models.request;
 
 public class QueryParameters
 {
