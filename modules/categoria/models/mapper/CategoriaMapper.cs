@@ -2,7 +2,6 @@
 using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
 using api_catalogo_curso.modules.common.pagination;
-using api_catalogo_curso.modules.common.pagination.models;
 using api_catalogo_curso.modules.common.pagination.models.response;
 using AutoMapper;
 

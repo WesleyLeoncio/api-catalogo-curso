@@ -19,18 +19,18 @@ public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
             GetIQueryable().OrderBy(c => c.Nome)
                 .Include(categoria => categoria.Produtos);
         return Pageable<Categoria>
-            .ToPagedList(categorias, queryParameters.PageNumber, queryParameters.PageSize);
+            .ToPaged(categorias, queryParameters.PageNumber, queryParameters.PageSize);
     }
 
     public Pageable<Categoria> GetAllFilterPageable(CategoriaFiltroRequest filtroRequest)
     {
-        IQueryable<Categoria> categorias = GetIQueryable();
+        IQueryable<Categoria> categorias = GetIQueryable().OrderBy(c => c.Nome);
         if (!string.IsNullOrEmpty(filtroRequest.Nome))
         {
             categorias = categorias.Where(c => 
                 c.Nome != null && c.Nome.Contains(filtroRequest.Nome));
         }
         return Pageable<Categoria>
-            .ToPagedList(categorias, filtroRequest.PageNumber, filtroRequest.PageSize);
+            .ToPaged(categorias, filtroRequest.PageNumber, filtroRequest.PageSize);
     }
 }

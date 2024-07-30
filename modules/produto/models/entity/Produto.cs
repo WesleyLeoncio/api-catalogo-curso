@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using api_catalogo_curso.modules.categoria.models.entity;
 
 namespace api_catalogo_curso.modules.produto.models.entity;
@@ -31,8 +30,8 @@ public class Produto
     [Column(name:"estoque")] 
     public float Estoque { get; set; }
     
-    [Required]
     [Column(name:"data_cadastro")] 
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime DataCadastro { get; set; }
     
     [Column(name:"categoria_id")] 
