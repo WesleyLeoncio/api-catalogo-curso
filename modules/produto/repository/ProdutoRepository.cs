@@ -2,6 +2,7 @@
 using api_catalogo_curso.modules.common.pagination;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.produto.models.entity;
+using api_catalogo_curso.modules.produto.models.enums;
 using api_catalogo_curso.modules.produto.models.request;
 using api_catalogo_curso.modules.produto.repository.interfaces;
 
@@ -18,13 +19,13 @@ public class ProdutoRepository : Repository<Produto>, IProdutoRepository
         {
             switch (filtroRequest.PrecoCriterio)
             {
-                case "maior":
+                case Criterio.MAIOR:
                     produtos = produtos.Where(p => p.Preco > filtroRequest.Preco);
                     break;
-                case "menor":
+                case Criterio.MENOR:
                     produtos = produtos.Where(p => p.Preco < filtroRequest.Preco);
                     break;
-                case "igual":
+                case Criterio.IGUAL:
                     produtos = produtos.Where(p => p.Preco == filtroRequest.Preco);
                     break;
             }

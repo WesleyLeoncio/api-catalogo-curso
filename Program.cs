@@ -23,8 +23,14 @@ builder.Services.AddControllers();
 
 // CYCLONISAÇÃO
 builder.Services.AddControllers()
-    .AddJsonOptions(option => option.JsonSerializerOptions
-        .ReferenceHandler = ReferenceHandler.IgnoreCycles);
+    .AddJsonOptions(option =>
+    {
+        //Ignora ciclos quando detectados
+        option.JsonSerializerOptions 
+            .ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        //Converte valores de enumeração de/para cadeias de caractere
+        option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
