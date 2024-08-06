@@ -10,16 +10,16 @@ public record ProdutoRequest(
     [Required(ErrorMessage = "Campo Descrição Obrigatorio!")]  
     [StringLength(300)] string? Descricao,
     
-    [Required(ErrorMessage = "Campo Preço Obrigatorio!")] 
+    [Range(1,20000, ErrorMessage = "O Preço deve está dentro do Range (1 a 20000)")]
     decimal Preco,
     
     [Required(ErrorMessage = "Campo ImagemUrl Obrigatorio!")] 
     [StringLength(300)] string? ImagemUrl,
     
-    [Required(ErrorMessage = "Campo Estoque Obrigatorio!")] 
+    [Range(1,20000, ErrorMessage = "O Estoque deve está dentro do Range (1 a 20000)")]
     float Estoque,
     
-    [Required(ErrorMessage = "Campo CategoriaId Obrigatorio!")] 
+    [Range(1,20000, ErrorMessage = "A CategoriaId deve ser informada e está dentro do Range (1 a 20000)")]
     int CategoriaId
     
     
