@@ -1,9 +1,13 @@
-﻿using api_catalogo_curso.modules.categoria.models.request;
+﻿using api_catalogo_curso.infra.exceptions.custom;
+using api_catalogo_curso.modules.categoria.models.entity;
+using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
-using api_catalogo_curso.modules.categoria.service.interfaces;
 using api_catalogo_curso.modules.common.pagination.models.request;
-using api_catalogo_curso.modules.common.pagination.models.response;
+using api_catalogo_curso.modules.common.unit_of_work.interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using X.PagedList;
 
 namespace api_catalogo_curso.modules.categoria.controller;
 
@@ -11,55 +15,92 @@ namespace api_catalogo_curso.modules.categoria.controller;
 [Route("[controller]")]
 public class CategoriaController : ControllerBase
 {
-    private readonly ICategoriaService _service;
-    public CategoriaController(ICategoriaService service)
-    {
-        _service = service;
-    }
+    private readonly IUnitOfWork _uof;
+    private readonly IMapper _mapper;
 
-    [HttpPost]
-    public ActionResult<CategoriaResponse> CadastroDeCategoria(CategoriaRequest request)
+    public CategoriaController(IUnitOfWork uof, IMapper mapper)
     {
-        CategoriaResponse response = _service.Create(request);
-        
-        return CreatedAtAction(nameof(BuscarCategoria),new { id = response.Id }, response);
+        _uof = uof;
+        _mapper = mapper;
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<CategoriaResponse>> CadastroDeCategoria(CategoriaRequest request)
+    {
+        Categoria newCategoria = 
+            _uof.CategoriaRepository.Create(_mapper.Map<Categoria>(request));
+        await _uof.Commit();
+        return CreatedAtAction(nameof(BuscarCategoria),new 
+            { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
     }
     
     [HttpGet("{id}")]
-    public ActionResult<CategoriaResponse> BuscarCategoria(int id)
+    public async Task<ActionResult<CategoriaResponse>> BuscarCategoria(int id)
     {
-        return Ok(_service.GetId(id));
+        Categoria categoria = await CheckCategoria(id);
+        return Ok(_mapper.Map<CategoriaResponse>(categoria));
     }
     
     [HttpGet]
-    public ActionResult<CategoriaResponse> ListarCategorias()
+    public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategorias()
     {
-        return Ok(_service.GetAll());
+        IEnumerable<Categoria> categorias = await _uof.CategoriaRepository.GetAllAsync();
+        return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
 
     [HttpGet("Produtos/Pagination")]
-    public ActionResult<PageableResponse<CategoriaProdutoResponse>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
+    public async Task<ActionResult<IEnumerable<CategoriaProdutoResponse>>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
     {
-        return Ok(_service.GetAllIncludePageable(queryParameters));
+        IPagedList<Categoria> categorias = 
+            await _uof.CategoriaRepository.GetAllIncludePageableAsync(queryParameters);
+        
+        var metadata = new
+        {
+            categorias.Count, categorias.PageSize, categorias.PageCount,
+            categorias.TotalItemCount, categorias.HasNextPage, categorias.HasPreviousPage
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return Ok(_mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias));
     }
     
     [HttpGet("Filter/Pagination")]
-    public ActionResult<PageableResponse<CategoriaResponse>> ListarCategoriaComFiltro([FromQuery] CategoriaFiltroRequest filtroRequest)
+    public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategoriaComFiltro([FromQuery] CategoriaFiltroRequest filtroRequest)
     {
-        return Ok(_service.GetAllFilterPageable(filtroRequest));
+        IPagedList<Categoria> categorias = 
+            await _uof.CategoriaRepository.GetAllFilterPageableAsync(filtroRequest);
+       
+        var metadata = new
+        {
+            categorias.Count, categorias.PageSize, categorias.PageCount,
+            categorias.TotalItemCount, categorias.HasNextPage, categorias.HasPreviousPage
+        };
+        
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
     
     [HttpPut("{id}")]
-    public ActionResult<CategoriaResponse> AlterarCategoria(int id,  CategoriaRequest request)
+    public async Task<ActionResult<CategoriaResponse>> AlterarCategoria(int id,  CategoriaRequest request)
     {
-        return _service.Update(id, request);
+        Categoria categoria = await CheckCategoria(id);
+        _mapper.Map(request, categoria);
+        Categoria update = _uof.CategoriaRepository.Update(categoria);
+        await _uof.Commit();
+        return Ok(_mapper.Map<CategoriaResponse>(update));
     }
     
     [HttpDelete("{id}")]
-    public ActionResult<CategoriaResponse> DeletarCategoria(int id)
+    public async Task<ActionResult<CategoriaResponse>> DeletarCategoria(int id)
     { 
-        return _service.Delete(id);
+        Categoria categoria = await CheckCategoria(id);
+        _uof.CategoriaRepository.Delete(categoria);
+        await _uof.Commit();
+        return Ok(_mapper.Map<CategoriaResponse>(categoria));
     }
     
-    
+    private async Task<Categoria> CheckCategoria(int id)
+    {
+        return await _uof.CategoriaRepository.GetAsync(c => c.Id == id)??
+               throw new NotFoundException("Categoria não encontrada!");
+    }
 }

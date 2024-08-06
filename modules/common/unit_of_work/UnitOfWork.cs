@@ -10,7 +10,7 @@ namespace api_catalogo_curso.modules.common.unit_of_work;
 public class UnitOfWork : IUnitOfWork
 {
     private IProdutoRepository? _produtoRepository;
-    private ICategoriaRepository? _categoriaRepository;
+   private ICategoriaRepository? _categoriaRepository;
     private readonly AppDbConnectionContext _context;
 
     public UnitOfWork(AppDbConnectionContext context)
@@ -34,13 +34,10 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public void Commit()
+    public async Task Commit()
     {
-        _context.SaveChanges();
+         await _context.SaveChangesAsync();
     }
 
-    public void Dispose()
-    {
-        _context.Dispose();
-    }
+  
 }

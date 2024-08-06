@@ -5,8 +5,6 @@ using api_catalogo_curso.infra.exceptions.interfaces;
 using api_catalogo_curso.infra.middlewares;
 using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
-using api_catalogo_curso.modules.categoria.service;
-using api_catalogo_curso.modules.categoria.service.interfaces;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.common.repository.interfaces;
 using api_catalogo_curso.modules.common.unit_of_work;
@@ -49,7 +47,6 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 
 // Handle Exceptions

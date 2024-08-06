@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api_catalogo_curso.modules.common.repository;
 
-public class Repository<T>: IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : class
 {
     private readonly AppDbConnectionContext _context;
 
@@ -13,20 +13,21 @@ public class Repository<T>: IRepository<T> where T : class
     {
         _context = context;
     }
-    
+
+
     public IQueryable<T> GetIQueryable()
     {
         return _context.Set<T>().AsNoTracking();
     }
 
-    public IEnumerable<T> GetAll()
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return GetIQueryable().ToList();
+        return await GetIQueryable().ToListAsync();
     }
-    
-    public T? Get(Expression<Func<T, bool>> predicate)
+
+    public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
     {
-        return GetIQueryable().FirstOrDefault(predicate);
+        return await GetIQueryable().FirstOrDefaultAsync(predicate);
     }
 
     public T Create(T entity)
