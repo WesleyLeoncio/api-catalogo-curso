@@ -1,4 +1,5 @@
 ﻿using api_catalogo_curso.infra.exceptions.custom;
+using api_catalogo_curso.modules.common.pagination;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.models.entity;
 using api_catalogo_curso.modules.produto.models.request;
@@ -30,13 +31,10 @@ public class ProdutoController : ControllerBase
     {
         IPagedList<Produto> produtos =  await _uof.ProdutoRepository.GetAllFilterPageableAsync(filtroRequest);
       
-        var metadata = new
-        {
-            produtos.Count, produtos.PageSize, produtos.PageCount,
-            produtos.TotalItemCount, produtos.HasNextPage, produtos.HasPreviousPage
-        };
+       
         //Adicionando dados da paginação no header da requisição
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        Response.Headers.Append("X-Pagination", 
+            JsonConvert.SerializeObject(MetaData<Produto>.ToValue(produtos)));
 
         return Ok(_mapper.Map<IEnumerable<ProdutoResponse>>(produtos));
     }

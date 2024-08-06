@@ -2,6 +2,7 @@
 using api_catalogo_curso.modules.categoria.models.entity;
 using api_catalogo_curso.modules.categoria.models.request;
 using api_catalogo_curso.modules.categoria.models.response;
+using api_catalogo_curso.modules.common.pagination;
 using api_catalogo_curso.modules.common.pagination.models.request;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using AutoMapper;
@@ -54,12 +55,8 @@ public class CategoriaController : ControllerBase
         IPagedList<Categoria> categorias = 
             await _uof.CategoriaRepository.GetAllIncludePageableAsync(queryParameters);
         
-        var metadata = new
-        {
-            categorias.Count, categorias.PageSize, categorias.PageCount,
-            categorias.TotalItemCount, categorias.HasNextPage, categorias.HasPreviousPage
-        };
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        Response.Headers.Append("X-Pagination", 
+            JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
         return Ok(_mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias));
     }
     
@@ -68,14 +65,9 @@ public class CategoriaController : ControllerBase
     {
         IPagedList<Categoria> categorias = 
             await _uof.CategoriaRepository.GetAllFilterPageableAsync(filtroRequest);
-       
-        var metadata = new
-        {
-            categorias.Count, categorias.PageSize, categorias.PageCount,
-            categorias.TotalItemCount, categorias.HasNextPage, categorias.HasPreviousPage
-        };
         
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        Response.Headers.Append("X-Pagination", 
+            JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
         return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
     
