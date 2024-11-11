@@ -10,7 +10,7 @@ namespace api_catalogo_curso.modules.common.unit_of_work;
 public class UnitOfWork : IUnitOfWork
 {
     private IProdutoRepository? _produtoRepository;
-   private ICategoriaRepository? _categoriaRepository;
+    private ICategoriaRepository? _categoriaRepository;
     private readonly AppDbConnectionContext _context;
 
     public UnitOfWork(AppDbConnectionContext context)
@@ -20,24 +20,16 @@ public class UnitOfWork : IUnitOfWork
 
     public IProdutoRepository ProdutoRepository
     {
-        get
-        {
-           return _produtoRepository = _produtoRepository ?? new ProdutoRepository(_context);
-        }
+        get { return _produtoRepository = _produtoRepository ?? new ProdutoRepository(_context); }
     }
-    
+
     public ICategoriaRepository CategoriaRepository
     {
-        get
-        {
-            return _categoriaRepository = _categoriaRepository ?? new CategoriaRepository(_context);
-        }
+        get { return _categoriaRepository = _categoriaRepository ?? new CategoriaRepository(_context); }
     }
 
     public async Task Commit()
     {
-         await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
-
-  
 }

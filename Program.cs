@@ -11,6 +11,7 @@ using api_catalogo_curso.modules.common.unit_of_work;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.repository;
 using api_catalogo_curso.modules.produto.repository.interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,10 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbConnectionContext>()
+    .AddDefaultTokenProviders();
 
 // Config AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
