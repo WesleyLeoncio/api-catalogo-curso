@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using api_catalogo_curso.infra.data;
 using api_catalogo_curso.infra.exceptions.handle;
@@ -11,14 +12,19 @@ using api_catalogo_curso.modules.common.unit_of_work;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.repository;
 using api_catalogo_curso.modules.produto.repository.interfaces;
+using api_catalogo_curso.modules.user;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+
 
 // CYCLONISAÇÃO
 builder.Services.AddControllers()
@@ -36,9 +42,36 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbConnectionContext>()
     .AddDefaultTokenProviders();
+
+// Config JWT
+var secretKey = builder.Configuration["JWT:SecretKey"]
+                ?? throw new ArgumentException("Invalid secret key!!");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(secretKey))
+    };
+});
+////////////////////////////////////////////////////////////////////////////////////////
 
 // Config AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
@@ -47,7 +80,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<AppDbConnectionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Connection")));
 
-// Injections, repositories and services
+// Injections, repositories 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
