@@ -13,6 +13,8 @@ using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.repository;
 using api_catalogo_curso.modules.produto.repository.interfaces;
 using api_catalogo_curso.modules.user;
+using api_catalogo_curso.modules.user.models;
+using api_catalogo_curso.modules.user.models.entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +26,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-
+//TODO TENTAR ORGANIZAR AS CONFIG
 
 // CYCLONISAÇÃO
 builder.Services.AddControllers()

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace api_catalogo_curso.modules.user;
+namespace api_catalogo_curso.modules.user.models.entity;
 
 public class ApplicationUser : IdentityUser
 {

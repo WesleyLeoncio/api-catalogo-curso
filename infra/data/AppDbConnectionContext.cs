@@ -1,6 +1,6 @@
 ﻿using api_catalogo_curso.modules.categoria.models.entity;
 using api_catalogo_curso.modules.produto.models.entity;
-using api_catalogo_curso.modules.user;
+using api_catalogo_curso.modules.user.models.entity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
