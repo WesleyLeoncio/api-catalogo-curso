@@ -12,6 +12,8 @@ using api_catalogo_curso.modules.common.unit_of_work;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using api_catalogo_curso.modules.produto.repository;
 using api_catalogo_curso.modules.produto.repository.interfaces;
+using api_catalogo_curso.modules.token.service;
+using api_catalogo_curso.modules.token.service.interfaces;
 using api_catalogo_curso.modules.user;
 using api_catalogo_curso.modules.user.models;
 using api_catalogo_curso.modules.user.models.entity;
@@ -87,6 +89,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 // Handle Exceptions
