@@ -14,6 +14,7 @@ namespace api_catalogo_curso.modules.categoria.controller;
 
 [ApiController]
 [Route("[controller]")]
+//TODO TENTAR REFATORAR E UTILIZAR SERVICE 
 public class CategoriaController : ControllerBase
 {
     private readonly IUnitOfWork _uof;
@@ -33,6 +34,9 @@ public class CategoriaController : ControllerBase
         await _uof.Commit();
         return CreatedAtAction(nameof(BuscarCategoria),new 
             { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
+        // CategoriaResponse response = await _service.CadastroDeCategoria(request);
+        // return CreatedAtAction(nameof(BuscarCategoria),new 
+        //     { id = response.Id}, _mapper.Map<CategoriaResponse>(response));
     }
     
     [HttpGet("{id}")]
@@ -40,6 +44,7 @@ public class CategoriaController : ControllerBase
     {
         Categoria categoria = await CheckCategoria(id);
         return Ok(_mapper.Map<CategoriaResponse>(categoria));
+        // return Ok(await _service.BuscarCategoria(id));
     }
     
     [HttpGet]
@@ -58,6 +63,10 @@ public class CategoriaController : ControllerBase
         Response.Headers.Append("X-Pagination", 
             JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
         return Ok(_mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias));
+        // IPagedList<Categoria> categorias = await _service.GetAllIncludePageable(queryParameters);
+        // Response.Headers.Append("X-Pagination", 
+        //     JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
+        // return Ok(_service.ResposeGetAllIncludePageable(categorias));
     }
     
     [HttpGet("Filter/Pagination")]
