@@ -1,14 +1,16 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using api_catalogo_curso.modules.token.models.request;
 using api_catalogo_curso.modules.token.service.interfaces;
 using api_catalogo_curso.modules.user.models.entity;
 using api_catalogo_curso.modules.user.models.request;
 using api_catalogo_curso.modules.user.models.response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.user.controller;
-//TODO TENTAR REFATORAR 
+//TODO TENTAR REFATORAR
 [ApiController]
 [Route("[controller]")]
 public class AuthController : ControllerBase
@@ -35,7 +37,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest model)
     {
         var user = await _userManager.FindByNameAsync(model.UserName!);
-
+        
         if (user is not null && await _userManager.CheckPasswordAsync(user, model.Password!))
         {
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
@@ -64,7 +66,10 @@ public class AuthController : ControllerBase
                 DateTime.Now.AddMinutes(refreshTokenValidityInMinutes);
 
             user.RefreshToken = refreshToken;
-
+            
+            // Converter DateTime para UTC antes de salvar    
+            user.RefreshTokenExpiryTime = user.RefreshTokenExpiryTime.ToUniversalTime();
+            
             await _userManager.UpdateAsync(user);
 
             return Ok(new
@@ -106,6 +111,71 @@ public class AuthController : ControllerBase
         }
 
         return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+    }
+    
+    [HttpPost]
+    [Route("refresh-token")]
+    public async Task<IActionResult> RefreshToken(TokenRequest tokenModel)
+    {
+
+        if (tokenModel is null)
+        {
+            return BadRequest("Invalid client request");
+        }
+
+        string? accessToken = tokenModel.AccessToken
+                              ?? throw new ArgumentNullException(nameof(tokenModel));
+
+        string? refreshToken = tokenModel.RefreshToken
+                               ?? throw new ArgumentException(nameof(tokenModel));
+
+        var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken!, _configuration);
+
+        if (principal == null)
+        {
+            return BadRequest("Invalid access token/refresh token");
+        }
+
+        string username = principal.Identity.Name;
+
+        var user = await _userManager.FindByNameAsync(username!);
+
+        if (user == null || user.RefreshToken != refreshToken
+                         || user.RefreshTokenExpiryTime <= DateTime.Now)
+        {
+            return BadRequest("Invalid access token/refresh token");
+        }
+
+        var newAccessToken = _tokenService.GenerateAccessToken(
+            principal.Claims.ToList(), _configuration);
+
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+
+        await _userManager.UpdateAsync(user);
+
+        return new ObjectResult(new
+        {
+            accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+            refreshToken = newRefreshToken
+        });
+    }
+    
+    [Authorize]
+    [HttpPost]
+    [Route("revoke/{username}")]
+    public async Task<IActionResult> Revoke(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+
+        if (user == null) return BadRequest("Invalid user name");
+
+        user.RefreshToken = null;
+
+        await _userManager.UpdateAsync(user);
+
+        return NoContent();
     }
     
 }

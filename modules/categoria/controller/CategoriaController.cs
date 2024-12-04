@@ -6,6 +6,7 @@ using api_catalogo_curso.modules.common.pagination;
 using api_catalogo_curso.modules.common.pagination.models.request;
 using api_catalogo_curso.modules.common.unit_of_work.interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
@@ -46,7 +47,7 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<CategoriaResponse>(categoria));
         // return Ok(await _service.BuscarCategoria(id));
     }
-    
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategorias()
     {
