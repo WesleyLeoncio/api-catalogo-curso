@@ -106,6 +106,17 @@ builder.Services.AddAuthentication(options =>
 });
 ////////////////////////////////////////////////////////////////////////////////////////
 
+///////////// ADD AUTHORIZATION ROLE ///////////////////////////////
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MASTER", policy => policy.RequireRole("MASTER"));
+    options.AddPolicy("ADMIN", policy => policy.RequireRole("ADMIN"));
+    options.AddPolicy("USER", policy => policy.RequireRole("USER"));
+});
+
+
+/////////////////////////////////////////////////////////////////////
+
 // Config AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -119,7 +130,6 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-// builder.Services.AddScoped<CategoriaService>();
 
 // Handle Exceptions
 builder.Services.AddTransient<IErrorResultTask, HandleNotFound>();
@@ -141,4 +151,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

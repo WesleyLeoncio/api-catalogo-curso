@@ -26,7 +26,7 @@ public class CategoriaController : ControllerBase
         _uof = uof;
         _mapper = mapper;
     }
-    
+    [Authorize(policy: "ADMIN")]
     [HttpPost]
     public async Task<ActionResult<CategoriaResponse>> CadastroDeCategoria(CategoriaRequest request)
     {
@@ -35,26 +35,25 @@ public class CategoriaController : ControllerBase
         await _uof.Commit();
         return CreatedAtAction(nameof(BuscarCategoria),new 
             { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
-        // CategoriaResponse response = await _service.CadastroDeCategoria(request);
-        // return CreatedAtAction(nameof(BuscarCategoria),new 
-        //     { id = response.Id}, _mapper.Map<CategoriaResponse>(response));
     }
     
+    [Authorize(policy: "ADMIN")]
     [HttpGet("{id}")]
     public async Task<ActionResult<CategoriaResponse>> BuscarCategoria(int id)
     {
         Categoria categoria = await CheckCategoria(id);
         return Ok(_mapper.Map<CategoriaResponse>(categoria));
-        // return Ok(await _service.BuscarCategoria(id));
     }
-    [Authorize]
+    
+    [Authorize(policy: "USER")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategorias()
     {
         IEnumerable<Categoria> categorias = await _uof.CategoriaRepository.GetAllAsync();
         return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
-
+    
+    [Authorize(policy: "USER")]
     [HttpGet("Produtos/Pagination")]
     public async Task<ActionResult<IEnumerable<CategoriaProdutoResponse>>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
     {
@@ -64,12 +63,9 @@ public class CategoriaController : ControllerBase
         Response.Headers.Append("X-Pagination", 
             JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
         return Ok(_mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias));
-        // IPagedList<Categoria> categorias = await _service.GetAllIncludePageable(queryParameters);
-        // Response.Headers.Append("X-Pagination", 
-        //     JsonConvert.SerializeObject(MetaData<Categoria>.ToValue(categorias)));
-        // return Ok(_service.ResposeGetAllIncludePageable(categorias));
     }
     
+    [Authorize(policy: "USER")]
     [HttpGet("Filter/Pagination")]
     public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategoriaComFiltro([FromQuery] CategoriaFiltroRequest filtroRequest)
     {
@@ -81,6 +77,7 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
     
+    [Authorize(policy: "ADMIN")]
     [HttpPut("{id}")]
     public async Task<ActionResult<CategoriaResponse>> AlterarCategoria(int id,  CategoriaRequest request)
     {
@@ -91,6 +88,7 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<CategoriaResponse>(update));
     }
     
+    [Authorize(policy: "ADMIN")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<CategoriaResponse>> DeletarCategoria(int id)
     { 

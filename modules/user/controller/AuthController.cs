@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.user.controller;
-//TODO TENTAR REFATORAR
+
+//TODO REFATORAR CODIGO 
 [ApiController]
 [Route("[controller]")]
 public class AuthController : ControllerBase
@@ -37,7 +38,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest model)
     {
         var user = await _userManager.FindByNameAsync(model.UserName!);
-        
+
         if (user is not null && await _userManager.CheckPasswordAsync(user, model.Password!))
         {
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
@@ -66,10 +67,10 @@ public class AuthController : ControllerBase
                 DateTime.Now.AddMinutes(refreshTokenValidityInMinutes);
 
             user.RefreshToken = refreshToken;
-            
+
             // Converter DateTime para UTC antes de salvar    
             user.RefreshTokenExpiryTime = user.RefreshTokenExpiryTime.ToUniversalTime();
-            
+
             await _userManager.UpdateAsync(user);
 
             return Ok(new
@@ -112,12 +113,11 @@ public class AuthController : ControllerBase
 
         return Ok(new Response { Status = "Success", Message = "User created successfully!" });
     }
-    
+
     [HttpPost]
     [Route("refresh-token")]
     public async Task<IActionResult> RefreshToken(TokenRequest tokenModel)
     {
-
         if (tokenModel is null)
         {
             return BadRequest("Invalid client request");
@@ -161,8 +161,8 @@ public class AuthController : ControllerBase
             refreshToken = newRefreshToken
         });
     }
-    
-    [Authorize]
+
+    [Authorize(policy: "ADMIN")]
     [HttpPost]
     [Route("revoke/{username}")]
     public async Task<IActionResult> Revoke(string username)
@@ -176,6 +176,53 @@ public class AuthController : ControllerBase
         await _userManager.UpdateAsync(user);
 
         return NoContent();
+    }
+    
+    [Authorize(policy: "MASTER")]
+    [HttpPost]
+    [Route("CreateRole")]
+    public async Task<IActionResult> CreateRole(string roleName)
+    {
+        bool roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+            if (roleResult.Succeeded)
+            {
+                _logger.LogInformation(1, "Roles Added");
+                return StatusCode(StatusCodes.Status201Created,
+                    new Response { Status = "Success", Message = $"Role {roleName} added successfully!" });
+            }
+
+            _logger.LogInformation(2, "Error");
+            return StatusCode(StatusCodes.Status400BadRequest,
+                new Response { Status = "Error", Message = $"Issue adding the new {roleName} role" });
+        }
+
+        return StatusCode(StatusCodes.Status400BadRequest,
+            new Response { Status = "Error", Message = "Role already exist" });
+    }
+    
+    [Authorize(policy: "MASTER")]
+    [HttpPost]
+    [Route("AddUserToRole")]
+    public async Task<IActionResult> AddUserToRole(string email, string roleName)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
+        {
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation(1, $"User {user.Email} added to the {roleName} role");
+                return StatusCode(StatusCodes.Status200OK,
+                    new Response { Status = "Success", Message = $"User {user.Email} added to the {roleName} role" });
+            }
+
+            _logger.LogInformation(1, $"Error: Unable to add user {user.Email} to the {roleName} role");
+            return StatusCode(StatusCodes.Status400BadRequest, new Response{Status = "Error", Message = $"Error: Unable to add user {user.Email}  to the {roleName} role"});
+        }
+        return BadRequest(new Response { Status = "Error", Message = "Unable to find user" });
     }
     
 }

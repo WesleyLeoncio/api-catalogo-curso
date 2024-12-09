@@ -5,6 +5,7 @@ using api_catalogo_curso.modules.produto.models.entity;
 using api_catalogo_curso.modules.produto.models.request;
 using api_catalogo_curso.modules.produto.models.response;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
