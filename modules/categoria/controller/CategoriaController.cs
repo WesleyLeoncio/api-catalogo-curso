@@ -15,7 +15,7 @@ namespace api_catalogo_curso.modules.categoria.controller;
 
 [ApiController]
 [Route("[controller]")]
-//TODO TENTAR REFATORAR E UTILIZAR SERVICE 
+//TODO: TENTAR REFATORAR E UTILIZAR SERVICE 
 public class CategoriaController : ControllerBase
 {
     private readonly IUnitOfWork _uof;
@@ -37,7 +37,7 @@ public class CategoriaController : ControllerBase
             { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
     }
     
-    [Authorize(policy: "ADMIN")]
+    [Authorize(policy: "USER")]
     [HttpGet("{id}")]
     public async Task<ActionResult<CategoriaResponse>> BuscarCategoria(int id)
     {

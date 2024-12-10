@@ -26,7 +26,7 @@ public class ProdutoController : ControllerBase
         _mapper = mapper;
     }
 
-    
+    [Authorize(policy: "USER")]
     [HttpGet("Filter/Preco/Pagination")]
     public async Task<ActionResult<IEnumerator<ProdutoResponse>>> ListarProdutoComFiltro([FromQuery] ProdutoFiltroRequest filtroRequest)
     {
@@ -39,14 +39,16 @@ public class ProdutoController : ControllerBase
 
         return Ok(_mapper.Map<IEnumerable<ProdutoResponse>>(produtos));
     }
-
+    
+    [Authorize(policy: "USER")]
     [HttpGet("{id}")]
     public async Task<ActionResult<ProdutoResponse>> BuscarProduto(int id)
     {
         Produto produto = await CheckProd(id);
         return Ok(_mapper.Map<ProdutoResponse>(produto));
     }
-
+    
+    [Authorize(policy: "ADMIN")]
     [HttpPost]
     public async Task<ActionResult<ProdutoResponse>> CadastroDeProduto(ProdutoRequest request)
     {
@@ -56,6 +58,7 @@ public class ProdutoController : ControllerBase
             { id = newProduto.Id }, _mapper.Map<ProdutoResponse>(newProduto));
     }
     
+    [Authorize(policy: "ADMIN")]
     [HttpPut("{id}")]
     public async Task<ActionResult<ProdutoResponse>> AlterarProduto(int id, ProdutoRequest request)
     {
@@ -66,6 +69,7 @@ public class ProdutoController : ControllerBase
         return Ok(_mapper.Map<ProdutoResponse>(update));
     }
     
+    [Authorize(policy: "ADMIN")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ProdutoResponse>> DeletarProduto(int id)
     {

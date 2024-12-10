@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.user.controller;
 
-//TODO REFATORAR CODIGO 
+//TODO: REFATORAR CODIGO 
 [ApiController]
 [Route("[controller]")]
 public class AuthController : ControllerBase
@@ -116,49 +116,38 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("refresh-token")]
-    public async Task<IActionResult> RefreshToken(TokenRequest tokenModel)
+    public async Task<IActionResult> RefreshToken(TokenRequest? tokenModel)
     {
-        if (tokenModel is null)
+        if (tokenModel == null || 
+            string.IsNullOrEmpty(tokenModel.AccessToken) || 
+            string.IsNullOrEmpty(tokenModel.RefreshToken))
         {
             return BadRequest("Invalid client request");
         }
-
-        string? accessToken = tokenModel.AccessToken
-                              ?? throw new ArgumentNullException(nameof(tokenModel));
-
-        string? refreshToken = tokenModel.RefreshToken
-                               ?? throw new ArgumentException(nameof(tokenModel));
-
-        var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken!, _configuration);
-
-        if (principal == null)
-        {
-            return BadRequest("Invalid access token/refresh token");
-        }
-
-        string username = principal.Identity.Name;
+        
+        var principal = _tokenService.GetPrincipalFromExpiredToken(tokenModel.AccessToken!, _configuration);
+        
+        string? username = principal.Identity?.Name;
 
         var user = await _userManager.FindByNameAsync(username!);
 
-        if (user == null || user.RefreshToken != refreshToken
-                         || user.RefreshTokenExpiryTime <= DateTime.Now)
+        if (user == null || user.RefreshToken != tokenModel.RefreshToken
+                         || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return BadRequest("Invalid access token/refresh token");
         }
 
         var newAccessToken = _tokenService.GenerateAccessToken(
             principal.Claims.ToList(), _configuration);
-
-        var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-        user.RefreshToken = newRefreshToken;
+        
+        user.RefreshToken = _tokenService.GenerateRefreshToken();
 
         await _userManager.UpdateAsync(user);
 
         return new ObjectResult(new
         {
             accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-            refreshToken = newRefreshToken
+            refreshToken = user.RefreshToken
         });
     }
 

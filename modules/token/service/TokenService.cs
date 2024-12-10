@@ -6,12 +6,12 @@ using api_catalogo_curso.modules.token.service.interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api_catalogo_curso.modules.token.service;
-
+//TODO: REFATORAR
 public class TokenService : ITokenService
 {
     public JwtSecurityToken GenerateAccessToken(IEnumerable<Claim> claims, IConfiguration config)
     {
-        //TODO TESTAR O LANÇAMENTO DE EXCEPTION
+        //TODO: TESTAR O LANÇAMENTO DE EXCEPTION
         string key = config.GetSection("JWT").GetValue<string>("SecretKey") ??
                   throw new InvalidOperationException("Invalid secret Key");
 
@@ -74,6 +74,7 @@ public class TokenService : ITokenService
         {
             throw new SecurityTokenException("Invalid token");
         }
+        
         return principal;
     }
 }
