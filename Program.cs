@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 // Configuração do Swagger usando a classe SwaggerConfig
 builder.Services.AddSwaggerConfiguration();
 
+//Configura o Indenty
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbConnectionContext>()
     .AddDefaultTokenProviders();
@@ -42,8 +43,6 @@ builder.Services.AddDbContext<AppDbConnectionContext>(options =>
 // Configuração de injeções de dependência usando a class DependencyInjectionConfig
 builder.Services.AddDependencyInjections();
 
-// Handle Exceptions
-builder.Services.AddTransient<IErrorResultTask, HandleNotFound>();
 
 var app = builder.Build();
 

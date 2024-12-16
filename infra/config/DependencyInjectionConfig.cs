@@ -1,4 +1,6 @@
-﻿using api_catalogo_curso.modules.categoria.repository;
+﻿using api_catalogo_curso.infra.exceptions.handle;
+using api_catalogo_curso.infra.exceptions.interfaces;
+using api_catalogo_curso.modules.categoria.repository;
 using api_catalogo_curso.modules.categoria.repository.interfaces;
 using api_catalogo_curso.modules.common.repository;
 using api_catalogo_curso.modules.common.repository.interfaces;
@@ -20,5 +22,6 @@ public static class DependencyInjectionConfig
         services.AddScoped<IProdutoRepository, ProdutoRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IErrorResultTask, HandleNotFound>();
     }
 }
