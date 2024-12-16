@@ -22,6 +22,6 @@ public static class DependencyInjectionConfig
         services.AddScoped<IProdutoRepository, ProdutoRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IErrorResultTask, HandleNotFound>();
+        services.AddTransient<IErrorResultTask, HandleNotFound>();
     }
 }
