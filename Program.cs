@@ -1,7 +1,5 @@
 using api_catalogo_curso.infra.config;
 using api_catalogo_curso.infra.data;
-using api_catalogo_curso.infra.exceptions.handle;
-using api_catalogo_curso.infra.exceptions.interfaces;
 using api_catalogo_curso.infra.middlewares;
 using api_catalogo_curso.modules.user.models.entity;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +13,18 @@ builder.Services.AddControllers();
 // Configuração das opções JSON usando a classe JsonConfig
 builder.Services.AddJsonConfiguration();
 
+
+// Configuração as politicas do cors usando a class PolicyCorsConfig
+builder.Services.AddPolicyCors();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 // Configuração do Swagger usando a classe SwaggerConfig
 builder.Services.AddSwaggerConfiguration();
+
+
+
 
 //Configura o Indenty
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -53,9 +58,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware(typeof(GlobalErrorHandlingMiddleware));
 
 app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseMiddleware(typeof(GlobalErrorHandlingMiddleware));
 
 app.UseAuthentication();
 
