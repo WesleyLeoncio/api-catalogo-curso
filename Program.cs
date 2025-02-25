@@ -13,6 +13,8 @@ builder.Services.AddControllers();
 // Configuração das opções JSON usando a classe JsonConfig
 builder.Services.AddJsonConfiguration();
 
+// Configuração do rate limiting usando a class RateLimiterConfig
+builder.Services.AddRateLimiterGlobal();
 
 // Configuração as politicas do cors usando a class PolicyCorsConfig
 builder.Services.AddPolicyCors();
@@ -60,6 +62,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseCors();
 
