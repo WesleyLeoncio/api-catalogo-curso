@@ -26,8 +26,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
 
 
-
-
 //Configura o Indenty
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbConnectionContext>()
@@ -49,6 +47,9 @@ builder.Services.AddDbContext<AppDbConnectionContext>(options =>
 
 // Configuração de injeções de dependência usando a class DependencyInjectionConfig
 builder.Services.AddDependencyInjections();
+
+// Configuração o versionamento usando a class ApiVersionConfig
+builder.Services.AddApiVersion();
 
 
 var app = builder.Build();
