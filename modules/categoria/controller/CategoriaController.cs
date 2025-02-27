@@ -13,9 +13,8 @@ using X.PagedList;
 
 namespace api_catalogo_curso.modules.categoria.controller;
 
-[ApiController]
 [Route("[controller]")]
-//TODO: TENTAR REFATORAR E UTILIZAR SERVICE 
+[ApiController]
 public class CategoriaController : ControllerBase
 {
     private readonly IUnitOfWork _uof;
@@ -26,6 +25,8 @@ public class CategoriaController : ControllerBase
         _uof = uof;
         _mapper = mapper;
     }
+    ///<summary>Cadastra Uma Nova Categoria</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Create))]
     [Authorize(policy: "ADMIN")]
     [HttpPost]
     public async Task<ActionResult<CategoriaResponse>> CadastroDeCategoria(CategoriaRequest request)
@@ -37,6 +38,8 @@ public class CategoriaController : ControllerBase
             { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
     }
     
+    ///<summary>Busca Uma Categoria Pelo Id</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("{id}")]
     public async Task<ActionResult<CategoriaResponse>> BuscarCategoria(int id)
@@ -45,6 +48,8 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<CategoriaResponse>(categoria));
     }
     
+    ///<summary>Lista Todas as Categorias</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategorias()
@@ -53,6 +58,8 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
     
+    ///<summary>Lista As Categorias Com Produtos e Filtro</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("Produtos/Pagination")]
     public async Task<ActionResult<IEnumerable<CategoriaProdutoResponse>>> ListarCategoriaComProdutos([FromQuery] QueryParameters queryParameters)
@@ -65,6 +72,8 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<CategoriaProdutoResponse>>(categorias));
     }
     
+    ///<summary>Lista As Categorias Com Filtro</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("Filter/Pagination")]
     public async Task<ActionResult<IEnumerable<CategoriaResponse>>> ListarCategoriaComFiltro([FromQuery] CategoriaFiltroRequest filtroRequest)
@@ -77,6 +86,8 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<CategoriaResponse>>(categorias));
     }
     
+    /// <summary>Altera Uma Categoria</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
     [Authorize(policy: "ADMIN")]
     [HttpPut("{id}")]
     public async Task<ActionResult<CategoriaResponse>> AlterarCategoria(int id,  CategoriaRequest request)
@@ -88,6 +99,8 @@ public class CategoriaController : ControllerBase
         return Ok(_mapper.Map<CategoriaResponse>(update));
     }
     
+    /// <summary>Deleta Uma Categoria</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
     [Authorize(policy: "ADMIN")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<CategoriaResponse>> DeletarCategoria(int id)
