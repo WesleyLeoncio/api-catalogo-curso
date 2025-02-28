@@ -90,13 +90,13 @@ public class CategoriaController : ControllerBase
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
     [Authorize(policy: "ADMIN")]
     [HttpPut("{id}")]
-    public async Task<ActionResult<CategoriaResponse>> AlterarCategoria(int id,  CategoriaRequest request)
+    public async Task<ActionResult> AlterarCategoria(int id,  CategoriaRequest request)
     {
         Categoria categoria = await CheckCategoria(id);
         _mapper.Map(request, categoria);
-        Categoria update = _uof.CategoriaRepository.Update(categoria);
+        _uof.CategoriaRepository.Update(categoria);
         await _uof.Commit();
-        return Ok(_mapper.Map<CategoriaResponse>(update));
+        return NoContent();
     }
     
     /// <summary>Deleta Uma Categoria</summary>

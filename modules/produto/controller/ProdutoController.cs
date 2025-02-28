@@ -25,7 +25,9 @@ public class ProdutoController : ControllerBase
         _uof = uof;
         _mapper = mapper;
     }
-
+    
+    ///<summary>Lista Produtos Com Filtro</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("Filter/Preco/Pagination")]
     public async Task<ActionResult<IEnumerator<ProdutoResponse>>> ListarProdutoComFiltro([FromQuery] ProdutoFiltroRequest filtroRequest)
@@ -40,6 +42,8 @@ public class ProdutoController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<ProdutoResponse>>(produtos));
     }
     
+    ///<summary>Busca Um Produto Pelo Id</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("{id}")]
     public async Task<ActionResult<ProdutoResponse>> BuscarProduto(int id)
@@ -48,6 +52,8 @@ public class ProdutoController : ControllerBase
         return Ok(_mapper.Map<ProdutoResponse>(produto));
     }
     
+    ///<summary>Cadastra Um Novo Produto</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Create))]
     [Authorize(policy: "ADMIN")]
     [HttpPost]
     public async Task<ActionResult<ProdutoResponse>> CadastroDeProduto(ProdutoRequest request)
@@ -58,17 +64,21 @@ public class ProdutoController : ControllerBase
             { id = newProduto.Id }, _mapper.Map<ProdutoResponse>(newProduto));
     }
     
+    /// <summary>Altera Um Produto</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
     [Authorize(policy: "ADMIN")]
     [HttpPut("{id}")]
-    public async Task<ActionResult<ProdutoResponse>> AlterarProduto(int id, ProdutoRequest request)
+    public async Task<ActionResult> AlterarProduto(int id, ProdutoRequest request)
     {
         Produto produto =  await CheckProd(id);
         _mapper.Map(request, produto);
-        Produto update = _uof.ProdutoRepository.Update(produto);
+        _uof.ProdutoRepository.Update(produto);
         await _uof.Commit();
-        return Ok(_mapper.Map<ProdutoResponse>(update));
+        return NoContent();
     }
     
+    /// <summary>Deleta Um Produto</summary>
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
     [Authorize(policy: "ADMIN")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ProdutoResponse>> DeletarProduto(int id)

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api_catalogo_curso.modules.user.controller;
 
-//TODO: REFATORAR CODIGO 
+
 [ApiController]
 [Route("[controller]")]
 public class AuthController : ControllerBase
@@ -35,6 +35,9 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Login([FromBody] LoginRequest model)
     {
         var user = await _userManager.FindByNameAsync(model.UserName!);
@@ -86,6 +89,9 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("register")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Register([FromBody] RegisterRequest model)
     {
         var userExists = await _userManager.FindByNameAsync(model.Username!);
@@ -116,17 +122,20 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("refresh-token")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> RefreshToken(TokenRequest? tokenModel)
     {
-        if (tokenModel == null || 
-            string.IsNullOrEmpty(tokenModel.AccessToken) || 
+        if (tokenModel == null ||
+            string.IsNullOrEmpty(tokenModel.AccessToken) ||
             string.IsNullOrEmpty(tokenModel.RefreshToken))
         {
             return BadRequest("Invalid client request");
         }
-        
+
         var principal = _tokenService.GetPrincipalFromExpiredToken(tokenModel.AccessToken!, _configuration);
-        
+
         string? username = principal.Identity?.Name;
 
         var user = await _userManager.FindByNameAsync(username!);
@@ -139,12 +148,12 @@ public class AuthController : ControllerBase
 
         var newAccessToken = _tokenService.GenerateAccessToken(
             principal.Claims.ToList(), _configuration);
-        
+
         user.RefreshToken = _tokenService.GenerateRefreshToken();
 
         await _userManager.UpdateAsync(user);
 
-        return new ObjectResult(new
+        return Ok(new
         {
             accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
             refreshToken = user.RefreshToken
@@ -154,6 +163,9 @@ public class AuthController : ControllerBase
     [Authorize(policy: "ADMIN")]
     [HttpPost]
     [Route("revoke/{username}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Revoke(string username)
     {
         var user = await _userManager.FindByNameAsync(username);
@@ -166,10 +178,13 @@ public class AuthController : ControllerBase
 
         return NoContent();
     }
-    
+
     [Authorize(policy: "MASTER")]
     [HttpPost]
     [Route("CreateRole")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> CreateRole(string roleName)
     {
         bool roleExists = await _roleManager.RoleExistsAsync(roleName);
@@ -191,10 +206,13 @@ public class AuthController : ControllerBase
         return StatusCode(StatusCodes.Status400BadRequest,
             new Response { Status = "Error", Message = "Role already exist" });
     }
-    
+
     [Authorize(policy: "MASTER")]
     [HttpPost]
     [Route("AddUserToRole")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> AddUserToRole(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -209,9 +227,11 @@ public class AuthController : ControllerBase
             }
 
             _logger.LogInformation(1, $"Error: Unable to add user {user.Email} to the {roleName} role");
-            return StatusCode(StatusCodes.Status400BadRequest, new Response{Status = "Error", Message = $"Error: Unable to add user {user.Email}  to the {roleName} role"});
+            return StatusCode(StatusCodes.Status400BadRequest,
+                new Response
+                    { Status = "Error", Message = $"Error: Unable to add user {user.Email}  to the {roleName} role" });
         }
+
         return BadRequest(new Response { Status = "Error", Message = "Unable to find user" });
     }
-    
 }
