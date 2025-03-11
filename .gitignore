@@ -5,6 +5,7 @@ project.lock.json
 *.pyc
 nupkg/
 
+*.DotSettings.user
 # Visual Studio Code
 .vscode/
 
