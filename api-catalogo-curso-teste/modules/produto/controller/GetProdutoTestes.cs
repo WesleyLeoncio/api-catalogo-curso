@@ -22,10 +22,10 @@ public class GetProdutoTestes : IClassFixture<ProdutoControllerTesteConfig>
         var prodId = 1; 
         
         // Act
-        ActionResult<ProdutoResponse> data = await _controller.BuscarProduto(prodId);
+        ActionResult<ProdutoResponse> act = await _controller.BuscarProduto(prodId);
         
         // Assert
-        data.Result.Should().BeOfType<OkObjectResult>()
+        act.Result.Should().BeOfType<OkObjectResult>()
             .Which.StatusCode.Should().Be(200);
     }
     
@@ -41,6 +41,21 @@ public class GetProdutoTestes : IClassFixture<ProdutoControllerTesteConfig>
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Produto não encontrado!");
+    }
+    
+    [Fact(DisplayName = "Deve retornar um objeto do tipo ProdutoResponse")]
+    public async Task GetProdutoById_ReturnTypeProdutoResponse()
+    {
+        // Arrange
+        var prodId = 1; 
+        
+        // Act
+        ActionResult<ProdutoResponse> act = await _controller.BuscarProduto(prodId);
+        
+        // Assert
+        act.Result.Should().BeOfType<OkObjectResult>()
+            .Which.Value.Should().BeOfType<ProdutoResponse>();
+        
     }
     
 }
