@@ -38,7 +38,7 @@ public class CategoriaController : ControllerBase
             { id = newCategoria.Id }, _mapper.Map<CategoriaResponse>(newCategoria));
     }
     
-    ///<summary>Busca Uma Categoria Pelo Id</summary>
+    ///<summary>Busca Uma Categoria Pelo ‘Id’</summary>
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("{id}")]

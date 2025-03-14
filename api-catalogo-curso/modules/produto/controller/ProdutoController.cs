@@ -30,7 +30,7 @@ public class ProdutoController : ControllerBase
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     [Authorize(policy: "USER")]
     [HttpGet("Filter/Preco/Pagination")]
-    public async Task<ActionResult<IEnumerator<ProdutoResponse>>> ListarProdutoComFiltro([FromQuery] ProdutoFiltroRequest filtroRequest)
+    public async Task<ActionResult<IEnumerable<ProdutoResponse>>> ListarProdutoComFiltro([FromQuery] ProdutoFiltroRequest filtroRequest)
     {
         IPagedList<Produto> produtos =  await _uof.ProdutoRepository.GetAllFilterPageableAsync(filtroRequest);
       

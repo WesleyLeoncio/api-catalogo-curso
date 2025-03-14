@@ -27,10 +27,11 @@ public class ProdutoControllerTesteConfig : IAsyncLifetime
 
     private async Task CreateProdutos()
     {
-        IEnumerable<Produto> produtos = Produtos.GetList();
+        IEnumerable<Produto> produtos = ProdutosData.GetList();
         foreach (var produto in produtos)
         { 
             Uof.ProdutoRepository.Create(produto);
+            Console.WriteLine("Produto cadastrado com sucesso!");
         }
         await Uof.Commit();
     }
