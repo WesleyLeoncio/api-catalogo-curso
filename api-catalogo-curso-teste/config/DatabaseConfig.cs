@@ -9,8 +9,9 @@ public static class DatabaseConfig
 {
     public static IUnitOfWork CreateInstanceUof()
     {
+        string databaseName = "TestDatabase_" + Guid.NewGuid();
         DbContextOptions<AppDbConnectionContext> dbContextOptions = new DbContextOptionsBuilder<AppDbConnectionContext>()
-            .UseInMemoryDatabase("TestDatabase")
+            .UseInMemoryDatabase(databaseName)
             .Options;
         
         AppDbConnectionContext context = new AppDbConnectionContext(dbContextOptions);
