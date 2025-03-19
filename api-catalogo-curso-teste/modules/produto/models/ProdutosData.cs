@@ -29,6 +29,10 @@ public static class ProdutosData
         };
     }
 
+    public static Produto GetProdutoIndex(int index)
+    {
+        return GetListProdutos().ElementAt(index);
+    }
 
     // Propriedade estática pública que fornece os dados de teste
     public static IEnumerable<object[]> FiltroDeProdutosTestData =>
@@ -49,10 +53,7 @@ public static class ProdutosData
     {
         return new List<object[]>
         {
-            new object[]
-            {
-                new ProdutoRequest("Cachorro Quente", "Cachorro quente mais gostoso da cidade.", 15, "cq.png", 5, 2)
-            },
+            new object[] { new ProdutoRequest("Cachorro Quente", "Cachorro quente mais gostoso da cidade.", 15, "cq.png", 5, 2) },
             new object[] { new ProdutoRequest("Heineken", "Cerveja Geladinha.", 7, "cv.png", 20, 1) }
         };
     }

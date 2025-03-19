@@ -22,28 +22,25 @@ public class GetProdutoTestes
 {
     private readonly ProdutoController _controller;
     private readonly Mock<IUnitOfWork> _mockUof;
-    private readonly Mock<IProdutoRepository> _mockProdutoRepository;
+
 
     public GetProdutoTestes()
     {
         _mockUof = new Mock<IUnitOfWork>();
-        _mockProdutoRepository = new Mock<IProdutoRepository>();
+        Mock<IProdutoRepository> mockProdutoRepository = new Mock<IProdutoRepository>();
         var mapper = AutoMapperConfig.Configure(new ProdutoMapper());
         
         _controller = new ProdutoController(_mockUof.Object, mapper);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext()
-        };
+        _controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
+        _mockUof.Setup(u => u.ProdutoRepository).Returns(mockProdutoRepository.Object);
     }
     
     [Fact(DisplayName = "Deve retornar OkResult ao buscar produto por ID")]
     public async Task GetProdutoById_Return_OKResult()
     {
         // Arrange
-        _mockUof.Setup(u => u.ProdutoRepository).Returns(_mockProdutoRepository.Object);
-        _mockProdutoRepository.Setup(repo => repo.GetAsync(It.IsAny<Expression<Func<Produto, bool>>>()))
-            .ReturnsAsync(new Produto { Id = 1, Nome = "Hamburgue", Descricao = "Hamburgue saboroso", Preco = 25, ImagemUrl = "hb.png" });
+        _mockUof.Setup(u => u.ProdutoRepository.GetAsync(It.IsAny<Expression<Func<Produto, bool>>>()))
+            .ReturnsAsync(ProdutosData.GetProdutoIndex(0));
         var prodId = 1;
         
         // Act
@@ -58,8 +55,8 @@ public class GetProdutoTestes
     public async Task GetProdutoById_Throws_NotFoundException()
     {
         // Arrange
-        _mockUof.Setup(u => u.ProdutoRepository).Returns(_mockProdutoRepository.Object);
-        _mockProdutoRepository.Setup(repo => repo.GetAsync(It.Is<Expression<Func<Produto, bool>>>(expr => false)))  // Simula um predicado que nunca retorna verdadeiro
+        // Simula um predicado que nunca retorna verdadeiro
+        _mockUof.Setup(u => u.ProdutoRepository.GetAsync(It.Is<Expression<Func<Produto, bool>>>(expr => false))) 
             .ReturnsAsync(null as Produto);
         var prodId = 50; 
         
@@ -75,9 +72,8 @@ public class GetProdutoTestes
     public async Task GetProdutoById_Return_Type_ProdutoResponse()
     {
         // Arrange
-        _mockUof.Setup(u => u.ProdutoRepository).Returns(_mockProdutoRepository.Object);
-        _mockProdutoRepository.Setup(repo => repo.GetAsync(It.IsAny<Expression<Func<Produto, bool>>>()))
-            .ReturnsAsync(new Produto { Id = 1, Nome = "Hamburgue", Descricao = "Hamburgue saboroso", Preco = 25, ImagemUrl = "hb.png" });
+        _mockUof.Setup(u => u.ProdutoRepository.GetAsync(It.IsAny<Expression<Func<Produto, bool>>>()))
+            .ReturnsAsync(ProdutosData.GetProdutoIndex(0));
         var prodId = 1; 
         
         // Act
@@ -94,9 +90,7 @@ public class GetProdutoTestes
     public async Task GetAllProdutoComFiltros_Testa_Filtro(Criterio criterio, decimal preco, int expectedCount)
     {
         // Arrange
-        _mockUof.Setup(u => u.ProdutoRepository).Returns(_mockProdutoRepository.Object);
-        
-        _mockProdutoRepository.Setup(repo => repo.GetAllFilterPageableAsync(It.IsAny<ProdutoFiltroRequest>()))
+        _mockUof.Setup(u => u.ProdutoRepository.GetAllFilterPageableAsync(It.IsAny<ProdutoFiltroRequest>()))
             .ReturnsAsync((ProdutoFiltroRequest request) =>
             {
                 var produtosFiltrados = ProdutosData.GetListProdutos()

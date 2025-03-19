@@ -18,19 +18,16 @@ public class PostProdutoTestes
 {
     private readonly ProdutoController _controller;
     private readonly Mock<IUnitOfWork> _mockUof;
-    private readonly Mock<IProdutoRepository> _mockProdutoRepository;
 
     public PostProdutoTestes()
     {
         _mockUof = new Mock<IUnitOfWork>();
-        _mockProdutoRepository = new Mock<IProdutoRepository>();
+        Mock<IProdutoRepository> mockProdutoRepository = new Mock<IProdutoRepository>();
         var mapper = AutoMapperConfig.Configure(new ProdutoMapper());
         
         _controller = new ProdutoController(_mockUof.Object, mapper);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext()
-        };
+        _controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
+        _mockUof.Setup(u => u.ProdutoRepository).Returns(mockProdutoRepository.Object);
     }
 
     [Theory(DisplayName = "Deve testar se o metodo cadastra o produto e retorna o codigo 201")]
@@ -38,8 +35,7 @@ public class PostProdutoTestes
     public async Task PostProduto_Return_CreatedStatusCode(ProdutoRequest request)
     {
         //Arrange
-        _mockUof.Setup(u => u.ProdutoRepository).Returns(_mockProdutoRepository.Object);
-        _mockProdutoRepository.Setup(repo => repo.Create(It.IsAny<Produto>()))
+        _mockUof.Setup(u => u.ProdutoRepository.Create(It.IsAny<Produto>()))
             .Returns((Produto p) => p);
         // Configura o Commit para não fazer nada (simulação)
         _mockUof.Setup(u => u.Commit()).Returns(Task.CompletedTask);
